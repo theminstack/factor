@@ -26,14 +26,14 @@ const NotificationsFactor = createFactor(useNotifications);
 Factor aware hooks can see how many subscribers they have with the `useFactorRefCount` hook. If `useFactorRefCount` is used outside of a Factor, it will return `-1` so that hooks can be factor aware while still working outside of factors.
 
 ```tsx
-const NotificationsFactor = createFactor((options: UseNotificationsOptions) => {
+const NotificationsFactor = createFactor((options: Options) => {
   const refCount = useFactorRefCount();
 
   return useNotifications({
     ...options,
-    // Provide a default enabled value for the useNotification hook, based on
-    // the number of children consuming notifications.
-    enabled: options.enabled ?? refCount > 0
+    // Provide a default value for the hook "enabled" option, based on the
+    // number of consumer children.
+    enabled: options.enabled ?? refCount !== 0
   });
 });
 ```
@@ -57,10 +57,10 @@ const {
 } = useFactor(NotificationsFactor);
 ```
 
-To avoid even more unnecessary renders, consumers can subscribe to only part of the Factor's state by passing a "selector" function to the `useFactor` hook.
+To avoid even more unnecessary renders, consumers can subscribe to only part of the Factor state by passing a "selector" function to the `useFactor` hook.
 
 ```tsx
-// This will only rerender if result.addNotifications changes.
+// This will only rerender if "result.addNotifications" changes.
 const addNotification = useFactor(NotificationsFactory, (result) => {
   return result.addNotification;
 });
