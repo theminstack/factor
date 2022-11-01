@@ -13,9 +13,9 @@ const {
 } = useNotifications({ api: "https://.../notifications" });
 ```
 
-If the app is simple, and notifications are created and consumed in close proximity, then that hook might be all that is needed.
+If an app is simple, and notifications are created and consumed in close proximity, then that hook might be all that is needed.
 
-As an app gets more complex, notifications might be generated and consumed in widely separated app components. React Factor makes it simple to hoist the hook that was already working, turning it into a shared dynamic state.
+As an app gets more complex, notifications might be generated and consumed in widely separated app components. React Factor makes it simple to hoist an existing hook, turning it into a shared dynamic state.
 
 Create a Factor from the `useNotifications` hook.
 
@@ -23,7 +23,22 @@ Create a Factor from the `useNotifications` hook.
 const NotificationsFactor = createFactor(useNotifications);
 ```
 
-The returned Factor is a context provider, which is a _required_ parent for any component which uses the Factor. The `useNotification` hook options are now the props of the `NotificationsFactor` component.
+Factor aware hooks can see how many subscribers they have with the `useFactorRefCount` hook. If `useFactorRefCount` is used outside of a Factor, it will return `-1` so that hooks can be factor aware while still working outside of factors.
+
+```tsx
+const NotificationsFactor = createFactor((options: UseNotificationsOptions) => {
+  const refCount = useFactorRefCount();
+
+  return useNotifications({
+    ...options,
+    // Provide a default enabled value for the useNotification hook, based on
+    // the number of children consuming notifications.
+    enabled: options.enabled ?? refCount > 0
+  });
+});
+```
+
+The returned Factor is a context provider, which is a _required_ parent for any component which uses the Factor. The `useNotification` hook options are now the props of the `NotificationsFactor` component (Factor hooks must only accept zero or one props-like object arguments).
 
 ```tsx
 render(
@@ -33,7 +48,7 @@ render(
 )
 ```
 
-Now the app can use the Factor instead of the original hook.
+The Factor can be used in place of the original hook.
 
 ```tsx
 const {

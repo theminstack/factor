@@ -6,7 +6,7 @@
     "email": "chris@topher.land"
   },
   "license": "ISC",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "files": [
     "lib/**"
   ],
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.2.0",
+    "@types/react": "^18.0.24",
     "del-cli": "^5.0.0",
     "eslint": "^8.26.0",
     "eslint-config-rational": "^2.0.6",
@@ -41,5 +42,8 @@
     "prettier": "^2.7.1",
     "ts-jest": "^29.0.3",
     "typescript": "^4.8.4"
+  },
+  "peerDependencies": {
+    "react": "^16"
   }
 }
