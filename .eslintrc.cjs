@@ -2,7 +2,7 @@
 module.exports = {
   env: { node: true },
   extends: ['rational', 'rational/warn', 'rational/prettier'],
-  ignorePatterns: ['node_modules', 'lib', 'out', 'dist'],
+  ignorePatterns: ['node_modules', 'lib', 'out', 'dist', '*.config.js', '*.config.cjs', '*rc.js', '*rc.cjs'],
   overrides: [
     {
       files: ['*.cjs'],

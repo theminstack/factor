@@ -6,7 +6,7 @@
     "email": "chris@topher.land"
   },
   "license": "ISC",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "files": [
     "lib/**"
   ],
@@ -26,6 +26,7 @@
   },
   "sideEffects": false,
   "scripts": {
+    "start": "vite --force",
     "test": "del-cli out && rc test -o",
     "prepack": "del-cli lib *.tgz && rc build",
     "modernize": "npx npm-check-updates -i --format group"
@@ -33,6 +34,9 @@
   "devDependencies": {
     "@types/jest": "^29.2.0",
     "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "@types/styled-components": "^5.1.26",
+    "@vitejs/plugin-react": "^2.2.0",
     "del-cli": "^5.0.0",
     "eslint": "^8.26.0",
     "eslint-config-rational": "^2.0.6",
@@ -40,10 +44,13 @@
     "jest-environment-jsdom": "^29.2.2",
     "parallel-rc": "^1.0.12",
     "prettier": "^2.7.1",
+    "react-dom": "^18.2.0",
+    "styled-components": "^5.3.6",
     "ts-jest": "^29.0.3",
-    "typescript": "^4.8.4"
+    "typescript": "^4.8.4",
+    "vite": "^3.2.2"
   },
   "peerDependencies": {
-    "react": "^16"
+    "react": ">=16"
   }
 }
