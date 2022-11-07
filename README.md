@@ -10,6 +10,19 @@ Hoist [React Hooks](https://reactjs.org/docs/hooks-intro.html) up to [React Cont
 - Avoid extra work when there are no consumers.
 - Support referencing parent state when nested.
 
+**Table of Contents:**
+
+- [Get Started](#get-started)
+  - [Select Single Values](#select-single-values)
+  - [Select Tuples](#select-tuples)
+  - [Use Optional Factors](#use-optional-factors)
+  - [Handle No Consumers](#handle-no-consumers)
+  - [Reference Parent State](#reference-parent-state)
+- [Compare Alternatives](#compare-alternatives)
+  - [React Context](#react-context)
+  - [Redux](#redux)
+  - [Others](#others)
+
 ## Get Started
 
 Let's say we have a `useAlerts` hook. This is something that might be used to show banners at the top of a page, or with an inbox icon in the app header.
