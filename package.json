@@ -3,7 +3,7 @@
   "description": "Convert React hooks into shared dynamic state.",
   "author": "Chris Ackerman <chris@topher.land>",
   "license": "ISC",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "keywords": [
     "react",
     "state",

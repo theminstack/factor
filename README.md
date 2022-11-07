@@ -83,11 +83,11 @@ The `useFactor(Factor)` hook throws an error if it does not have a `Factor` pare
 const valueOrUndefined = useOptionalFactor(NotificationsFactor);
 ```
 
-A selector can be used to provide a default value.
+A selector can be used to provide a default value. When an optional Factor hook has no Factor parent, the `value` passed to the selector will be undefined.
 
 ```tsx
 const notifications = useOptionalFactor(NotificationsFactor, (value) => {
-  return value.notifications ?? [];
+  return value ? value.notifications : [];
 });
 ```
 
