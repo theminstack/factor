@@ -1,4 +1,4 @@
-# react-factor
+# React Factor
 
 Hoist [React Hooks](https://reactjs.org/docs/hooks-intro.html) up to [React Contexts](https://reactjs.org/docs/context.html) to create shared dynamic states.
 
@@ -36,6 +36,8 @@ As an app grows, the places that generate alerts will become more widely separat
 Create a factor from the `useAlerts` hook.
 
 ```tsx
+import { createFactor } from 'react-factor';
+
 const AlertsFactor = createFactor(useAlerts);
 ```
 
