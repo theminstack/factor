@@ -1,12 +1,20 @@
 {
   "name": "react-factor",
   "description": "Convert React hooks into shared dynamic state.",
-  "author": {
-    "name": "Chris Ackerman",
-    "email": "chris@topher.land"
-  },
+  "author": "Chris Ackerman <chris@topher.land>",
   "license": "ISC",
-  "version": "0.0.7",
+  "version": "0.0.8",
+  "keywords": [
+    "react",
+    "state",
+    "context",
+    "hook",
+    "hoist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shakeskeyboarde/react-factor.git"
+  },
   "files": [
     "lib/**"
   ],
