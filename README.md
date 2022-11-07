@@ -69,7 +69,19 @@ const addAlert = useFactor(AlertsFactor, (value) => {
 });
 ```
 
-Selector should be [pure functions](https://en.wikipedia.org/wiki/Pure_function) with implementations that do not change during the lifetime of a component. A literal arrow function without any outer scope references is recommended.
+Ideally, selectors should be [pure functions](https://en.wikipedia.org/wiki/Pure_function) with implementations that do not change during the lifetime of a component. A literal arrow function without any outer scope references is recommended.
+
+However, if you need to reference values from the component scope, the `useFactor` hook accepts a third dependency array argument (much like React's `useCallback` hook) which will trigger reselection when dependencies change.
+
+```tsx
+const { alertId } = props;
+// Rerenders when the alertId or the selected alert are updated.
+const alert = useFactor(
+  AlertsFactor,
+  (value) => value.alerts[alertId],
+  [alertId],
+);
+```
 
 ### Select Tuples
 
@@ -77,10 +89,7 @@ Tuples (multiple values) can be selected from a factor by providing an array or 
 
 ```tsx
 // Array Tuple
-const [addAlert, removeAlert] = useFactor(AlertsFactor, [
-  (value) => value.addAlert,
-  (value) => value.removeAlert,
-]);
+const [addAlert, removeAlert] = useFactor(AlertsFactor, [(value) => value.addAlert, (value) => value.removeAlert]);
 
 // Object Tuple
 const { addAlert, removeAlert } = useFactor(AlertsFactor, {
@@ -97,7 +106,7 @@ The `useFactor(Factor)` hook throws an error if it does not have a `Factor` pare
 const valueOrUndefined = useOptionalFactor(AlertsFactor);
 ```
 
-When an optional factor hook has no factor parent, the selector is still called with an undefined `value`. Therefore, selectors can be used to provide default values when used with option factors.
+When an optional factor hook has no factor parent, the selector is still called with an undefined `value`. Therefore, selectors can be used to provide default values when used with optional factors.
 
 ```tsx
 const alerts = useOptionalFactor(AlertsFactor, (value) => {

@@ -2,13 +2,25 @@ import { type ChangeEvent, type FormEvent, StrictMode, useCallback, useRef, useS
 import { createRoot } from 'react-dom/client';
 import { createGlobalStyle } from 'styled-components';
 
-import { createFactor, useFactor, useFactorStatus, useOptionalFactor } from './index.js';
+import { createFactor, useFactor, useOptionalFactor } from './index.js';
 
 const GlobalStyle = createGlobalStyle`
   body {
     color: #ccc;
     background: black;
     font-family: Arial, Helvetica, sans-serif;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    text-decoration: underline;
+    margin: 0;
   }
 
   ul {
@@ -33,21 +45,19 @@ const NestingCount = () => {
   return <div>Nesting Count: {count}</div>;
 };
 
-const useNotes = () => {
+const useTodos = () => {
   const id = useRef(0);
-  const [notes, setNotes] = useState<Readonly<Record<string, string>>>(Object.create(null));
-  const factorStatus = useFactorStatus();
-  console.log('Factor Status: ' + factorStatus);
+  const [todos, setTodos] = useState<Readonly<Record<string, string>>>(Object.create(null));
 
-  const addNote = useCallback((note: string) => {
-    setNotes((current) => {
+  const addTodo = useCallback((todo: string) => {
+    setTodos((current) => {
       const noteId = `${(id.current += 1)}`;
-      return { ...current, [noteId]: note };
+      return { ...current, [noteId]: todo };
     });
   }, []);
 
-  const removeNote = useCallback((noteId: string) => {
-    setNotes((current) => {
+  const removeTodo = useCallback((noteId: string) => {
+    setTodos((current) => {
       const next: Record<string, string> = Object.create(null);
       Object.entries(current).forEach(([key, value]) => {
         if (key !== noteId) {
@@ -58,63 +68,79 @@ const useNotes = () => {
     });
   }, []);
 
-  return { addNote, notes, removeNote };
+  return { addTodo, removeTodo, todos };
 };
 
-const Notes = createFactor(useNotes);
+const TodoFactor = createFactor(useTodos);
 
-const Note = (props: { note: string; noteId: string; removeNote: (noteId: string) => void }) => {
-  const { note, noteId, removeNote } = props;
-  const remove = useCallback(() => removeNote(noteId), [removeNote, noteId]);
+const Todo = (props: { todoId: string }) => {
+  const { todoId } = props;
+  const [todo, removeTodo] = useFactor(
+    TodoFactor,
+    [
+      // Tuple Array
+      (value) => value.todos[todoId],
+      (value) => value.removeTodo,
+    ],
+    [todoId],
+  );
+  const onClick = useCallback(() => removeTodo(todoId), [removeTodo, todoId]);
 
   return (
     <>
-      <button onClick={remove}>
-        <strong>✕</strong>
+      <button onClick={onClick}>
+        <strong>✓</strong>
       </button>
-      <div>{note} </div>
+      <div>{todo} </div>
     </>
   );
 };
 
-const NoteList = () => {
-  const [notes, removeNote] = useFactor(Notes, [
-    // Tuple
-    (value) => value.notes,
-    (value) => value.removeNote,
-  ]);
+const TodoList = () => {
+  const todoIds = useFactor(TodoFactor, (value) => Object.keys(value.todos));
 
   return (
     <div>
-      <ul style={{ listStyle: 'none' }}>
-        {Object.entries(notes).map(([noteId, note]) => (
-          <li key={noteId}>
-            <Note note={note} noteId={noteId} removeNote={removeNote} />
+      <ul>
+        {todoIds.length ? (
+          todoIds.map((todoId) => (
+            <li key={todoId}>
+              <Todo todoId={todoId} />
+            </li>
+          ))
+        ) : (
+          <li>
+            <em>All done!</em>
           </li>
-        ))}
+        )}
       </ul>
     </div>
   );
 };
 
-const NewNote = () => {
-  const addNote = useFactor(Notes, (value) => value.addNote);
-  const [note, setNote] = useState('');
+const NewTodo = () => {
+  const addTodo = useFactor(TodoFactor, (value) => value.addTodo);
+  const [todo, setTodo] = useState('');
   const onChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setNote(event.target.value);
+    setTodo(event.target.value);
   }, []);
   const onSave = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
-      addNote(note);
-      setNote('');
+
+      const trimmed = todo.trim();
+
+      if (trimmed) {
+        addTodo(trimmed);
+        setTodo('');
+      }
     },
-    [note, addNote],
+    [todo, addTodo],
   );
 
   return (
     <form onSubmit={onSave}>
-      <input value={note} onChange={onChange} />
+      <input value={todo} onChange={onChange} />
       <button type="submit">Save</button>
     </form>
   );
@@ -123,15 +149,19 @@ const NewNote = () => {
 createRoot(document.body.appendChild(document.createElement('div'))).render(
   <StrictMode>
     <GlobalStyle />
-    <Notes>
-      <h1>Notes</h1>
-      <NoteList />
-      <NewNote />
-    </Notes>
-    <NestingFactor>
+    <main>
+      <TodoFactor>
+        <div>
+          <u>Todo List</u>
+        </div>
+        <TodoList />
+        <NewTodo />
+      </TodoFactor>
       <NestingFactor>
-        <NestingCount />
+        <NestingFactor>
+          <NestingCount />
+        </NestingFactor>
       </NestingFactor>
-    </NestingFactor>
+    </main>
   </StrictMode>,
 );

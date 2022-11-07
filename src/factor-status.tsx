@@ -38,7 +38,10 @@ const useFactorStatus = (): FactorStatus => {
   const observable = window[$STATUS];
   const [status, setStatus] = useState(observable?.value ?? 'active');
 
-  useEffect(() => observable?.onNext(setStatus), [observable]);
+  useEffect(() => {
+    observable?.onNext(setStatus);
+    setStatus(observable?.value ?? 'active');
+  }, [observable]);
 
   return status;
 };

@@ -22,14 +22,17 @@ type FactorHook = {
   <TValue, TSelector extends SelectorValue<TValue, any>>(
     factor: Pick<Factor<TValue, any>, 'Context'>,
     selector: TSelector,
+    dependencies?: unknown[],
   ): InferSelectedValue<TSelector>;
   <TValue, TSelector extends SelectorArray<TValue>>(
     factor: Pick<Factor<TValue, any>, 'Context'>,
     selector: TSelector,
+    dependencies?: unknown[],
   ): InferSelectedArray<TSelector>;
   <TValue, TSelector extends SelectorObject<TValue>>(
     factor: Pick<Factor<TValue, any>, 'Context'>,
     selector: TSelector,
+    dependencies?: unknown[],
   ): InferSelectedObject<TSelector>;
 };
 
@@ -38,14 +41,17 @@ type OptionalFactorHook = {
   <TValue, TSelector extends SelectorValue<TValue | undefined, any>>(
     factor: Pick<Factor<TValue, any>, 'Context'>,
     selector: TSelector,
+    dependencies?: unknown[],
   ): InferSelectedValue<TSelector>;
   <TValue, TSelector extends SelectorArray<TValue | undefined>>(
     factor: Pick<Factor<TValue, any>, 'Context'>,
     selector: TSelector,
+    dependencies?: unknown[],
   ): InferSelectedArray<TSelector>;
   <TValue, TSelector extends SelectorObject<TValue | undefined>>(
     factor: Pick<Factor<TValue, any>, 'Context'>,
     selector: TSelector,
+    dependencies?: unknown[],
   ): InferSelectedObject<TSelector>;
 };
 
@@ -73,6 +79,7 @@ const createFactor = <TValue, TProps extends object>(
 const useFactor: FactorHook = <TValue, TSelector extends Selector<TValue, any>>(
   factor: Pick<Factor<TValue, any>, 'Context'>,
   selector?: TSelector,
+  dependencies?: unknown[],
 ): InferSelected<TValue, TSelector | undefined> => {
   const observable = useContext(factor.Context);
 
@@ -80,16 +87,17 @@ const useFactor: FactorHook = <TValue, TSelector extends Selector<TValue, any>>(
     throw new Error('factor parent is required');
   }
 
-  return useObservable(observable, selector);
+  return useObservable(observable, selector, dependencies);
 };
 
 const useOptionalFactor: OptionalFactorHook = <TValue, TSelector extends Selector<TValue | undefined, any>>(
   factor: Pick<Factor<TValue, any>, 'Context'>,
   selector?: TSelector | undefined,
+  dependencies?: unknown[],
 ): InferSelected<TValue | undefined, TSelector | undefined> => {
   const observable = useContext(factor.Context);
 
-  return useObservable(observable, selector);
+  return useObservable(observable, selector, dependencies);
 };
 
 export { type Factor, createFactor, useFactor, useOptionalFactor };

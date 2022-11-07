@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { type InferSelected, type Selector, getSelectorValue } from './selector.js';
 
@@ -48,7 +48,7 @@ const isTupleChanged = (a: any, b: any): boolean => {
   return a !== b;
 };
 
-const createObservable = <TValue>(initialValue: TValue, onRefCount?: (value: number) => void): Observable<TValue> => {
+const createObservable = <TValue,>(initialValue: TValue, onRefCount?: (value: number) => void): Observable<TValue> => {
   const onNextCallbacks = new Set<(value: TValue) => void>();
   const observable = {
     next: (newValue: TValue): void => {
@@ -57,7 +57,6 @@ const createObservable = <TValue>(initialValue: TValue, onRefCount?: (value: num
     },
     onNext: (listener: (value: TValue) => void): (() => void) => {
       listener = listener.bind(null);
-      listener(observable.value);
       onNextCallbacks.add(listener);
       onRefCount?.(onNextCallbacks.size);
 
@@ -80,27 +79,35 @@ const useObservable = <
 >(
   observable: TObservable,
   selector: TSelector,
+  dependencies: unknown[] = [],
 ): InferSelected<TValue, TSelector> => {
   const selectorRef = useRef(selector);
   const [value, setValue] = useState(() => getSelectorValue(selectorRef.current, observable?.value));
   const valueRef = useRef(value);
+
+  const update = useCallback((newValue: TValue): void => {
+    const selected = getSelectorValue(selectorRef.current, newValue);
+    const isUpdated =
+      typeof selectorRef.current === 'function' ? newValue !== selected : isTupleChanged(valueRef.current, selected);
+
+    if (isUpdated) {
+      valueRef.current = selected;
+      setValue(() => selected);
+    }
+  }, []);
 
   useEffect(() => {
     selectorRef.current = selector;
   });
 
   useEffect(() => {
-    return observable?.onNext((newValue) => {
-      const selected = getSelectorValue(selectorRef.current, newValue);
-      const isUpdated =
-        typeof selectorRef.current === 'function' ? newValue !== selected : isTupleChanged(valueRef.current, selected);
+    return observable?.onNext(update);
+  }, [observable, update]);
 
-      if (isUpdated) {
-        valueRef.current = selected;
-        setValue(() => selected);
-      }
-    });
-  }, [observable]);
+  useEffect(() => {
+    update(observable?.value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [observable, update, ...dependencies]);
 
   return value;
 };
