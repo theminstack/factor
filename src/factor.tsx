@@ -63,6 +63,7 @@ const createFactor = <TValue, TProps extends object>(
       </>
     );
   };
+
   Factor.Context = createContext<Observable<TValue> | undefined>(undefined);
   Factor.Context.displayName = 'Factor';
 

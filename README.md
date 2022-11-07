@@ -46,11 +46,11 @@ const { notifications, addNotification } = useFactor(NotificationsFactor);
 
 ### Selectors
 
-The `useFactor` hook also accepts a second selector function argument. The hook will only trigger a re-render when the selected value changes. The selector receives the full factor `value`, and the `previous` selected value as arguments.
+The `useFactor` hook also accepts a second selector function argument. The hook will only trigger a re-render when the selected value changes.
 
 ```tsx
 // Only rerender when "value.addNotifications" is updated.
-const addNotification = useFactor(NotificationsFactor, (value, previous) => {
+const addNotification = useFactor(NotificationsFactor, (value) => {
   return value.addNotification;
 });
 ```
@@ -64,14 +64,14 @@ You can select tuples (multiple values) from the factor by providing an array or
 ```tsx
 // Array Tuple
 const [addNotification, removeNotification] = useFactor(NotificationsFactor, [
-  (value, previous) => value.addNotifications,
-  (value, previous) => value.removeNotifications,
+  (value) => value.addNotifications,
+  (value) => value.removeNotifications,
 ]);
 
 // Object Tuple
 const { addNotification, removeNotification } = useFactor(NotificationsFactor, {
-  addNotification: (value, previous) => value.addNotifications,
-  removeNotification: (value, previous) => value.removeNotifications,
+  addNotification: (value) => value.addNotifications,
+  removeNotification: (value) => value.removeNotifications,
 });
 ```
 
@@ -86,7 +86,7 @@ const valueOrUndefined = useOptionalFactor(NotificationsFactor);
 A selector can be used to provide a default value.
 
 ```tsx
-const notifications = useOptionalFactor(NotificationsFactor, (value, previous) => {
+const notifications = useOptionalFactor(NotificationsFactor, (value) => {
   return value.notifications ?? [];
 });
 ```
