@@ -5,7 +5,8 @@ Convert React hooks into shared dynamic state.
 - Improve efficiency over simple hoisting.
 - Compose state and behavior using any React hook.
 - Leverage React hook testing tools.
-- Detect idleness when there are no consumers.
+- Detect idle status when there are no consumers.
+- Inherit parent state through recursion.
 
 ## How does it work?
 
@@ -110,7 +111,7 @@ const NotificationsFactor = createFactor((options: Options) => {
 
 ### Nested Recursive Factors
 
-A Factor hook can reference its own Factor, allowing it to inherit a parent Factor context.
+A Factor hook can reference its own Factor, allowing it to inherit the state from a parent of the same Factor type.
 
 A simple example would be counting how many Factor parents a component has.
 
