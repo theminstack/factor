@@ -1,47 +1,44 @@
-import { useEffect, useRef, useState } from 'react';
+import { type ComponentType, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 
-import { type Observable, setObservableScope } from './observable.js';
+import { withFactorStatus } from './factor-status.js';
+import { type Observable, createObservable } from './observable.js';
 
-type Props<TResult, TProps extends object> = {
-  readonly hook: (props: TProps) => TResult;
-  readonly hookProps: TProps;
-  readonly observable: Observable<TResult>;
+type Props<TValue, TProps extends object> = {
+  onObservable: (observable: Observable<TValue>) => void;
+  useValueProps: TProps;
 };
 
-const Worker = <TResult, TProps extends object>({ observable, hook, hookProps }: Props<TResult, TProps>): null => {
-  let result: TResult;
+const useIsometricEffect =
+  typeof window !== 'undefined' && Boolean(window.document?.createElement) ? useLayoutEffect : useEffect;
 
-  try {
-    setObservableScope(observable);
-    result = hook(hookProps);
-  } finally {
-    setObservableScope(undefined);
-  }
-
-  const resultRef = useRef(result);
-
-  // Initialize the observable on first render to avoid a delay in rendering
-  // consumer children. This borders on breaking the React side effects
-  // contract. However, if the consumer children were rendered by this Worker
-  // component instead of the sibling Renderer component, they would receive
-  // this initial state on first render. The "observable.initialized" flag is
-  // there to guard against changes in the React rendering order which might
-  // cause the observable to be uninitialized when the Renderer children are
-  // mounted.
-  useState(() => {
-    observable.current = result;
-    observable.initialized = true;
-  });
-
-  useEffect(() => {
-    if (resultRef.current !== result) {
-      resultRef.current = result;
-      observable.next(result);
-    }
-  }, [observable, result]);
-
-  return null;
+const useSingleton = <TValue,>(init: () => TValue): TValue => {
+  const initRef = useRef(init);
+  return useMemo(() => initRef.current(), []);
 };
-Worker.displayName = 'ReactFactorWorker';
 
-export { Worker };
+const createWorker = <TValue, TProps extends object>(
+  useValue: (props: TProps) => TValue,
+): ComponentType<Props<TValue, TProps>> => {
+  const [useFactorValue, setFactorStatus] = withFactorStatus(useValue);
+  const Worker = ({ onObservable, useValueProps }: Props<TValue, TProps>) => {
+    const value = useFactorValue(useValueProps);
+    const observable = useSingleton(() =>
+      createObservable(value, (refCount) => setFactorStatus(refCount > 0 ? 'active' : 'idle')),
+    );
+
+    useIsometricEffect(() => {
+      observable.next(value);
+    }, [value, observable]);
+
+    useIsometricEffect(() => {
+      onObservable(observable);
+    }, []);
+
+    return null;
+  };
+  Worker.displayName = 'Factor.Worker';
+
+  return Worker;
+};
+
+export { createWorker };

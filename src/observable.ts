@@ -1,62 +1,108 @@
-const scope = Symbol.for('$$ReactFactorObservableScope');
+import { useEffect, useRef, useState } from 'react';
 
-type Observable<TResult> = {
-  readonly count: number;
-  current: TResult;
-  initialized: boolean;
-  readonly next: (result: TResult) => void;
-  readonly onNext: (subscriber: (result: TResult) => void) => () => void;
-  readonly onSubscribe: (listener: (count: number) => void) => () => void;
+import { type InferSelected, type Selector, getSelectorValue } from './selector.js';
+
+type Observable<TValue> = {
+  readonly next: (value: TValue) => void;
+  readonly onNext: (listener: (value: TValue) => void) => () => void;
+  readonly value: TValue;
 };
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface Window {
-    [scope]?: Observable<any>;
-  }
-}
+const isPlainObject = (value: any): value is Record<string, any> => {
+  return Boolean(value) && [Object.prototype, null].includes(Object.getPrototypeOf(value));
+};
 
-const createObservable = <TResult>(): Observable<TResult> => {
-  const nextListeners = new Set<(result: TResult) => void>();
-  const onNextListeners = new Set<(count: number) => void>();
-  const observable: Observable<TResult> = {
-    get count() {
-      return nextListeners.size;
+const isTupleChanged = (a: any, b: any): boolean => {
+  const aType = typeof a;
+  const bType = typeof b;
+
+  if (aType !== bType) return true;
+
+  if (aType === 'object') {
+    if (Array.isArray(a)) {
+      if (!Array.isArray(b)) return true;
+      if (a.length !== b.length) return true;
+
+      for (let i = a.length - 1; i >= 0; i--) {
+        if (a[i] !== b[i]) return true;
+      }
+
+      return false;
+    }
+
+    if (isPlainObject(a)) {
+      if (!isPlainObject(b)) return true;
+
+      const keys = Object.keys(a);
+
+      if (keys.length !== Object.keys(b).length) return true;
+
+      for (const key of keys) {
+        if (a[key] !== b[key]) return true;
+      }
+
+      return false;
+    }
+  }
+
+  return a !== b;
+};
+
+const createObservable = <TValue>(initialValue: TValue, onRefCount?: (value: number) => void): Observable<TValue> => {
+  const onNextCallbacks = new Set<(value: TValue) => void>();
+  const observable = {
+    next: (newValue: TValue): void => {
+      observable.value = newValue;
+      onNextCallbacks.forEach((callback) => callback(observable.value));
     },
-    current: undefined as TResult,
-    initialized: false,
-    next: (result) => {
-      observable.current = result;
-      nextListeners.forEach((listener) => listener(result));
-    },
-    onNext: (newListener) => {
-      newListener = newListener.bind(null);
-      newListener(observable.current);
-      nextListeners.add(newListener);
-      onNextListeners.forEach((listener) => listener(nextListeners.size));
+    onNext: (listener: (value: TValue) => void): (() => void) => {
+      listener = listener.bind(null);
+      listener(observable.value);
+      onNextCallbacks.add(listener);
+      onRefCount?.(onNextCallbacks.size);
+
       return () => {
-        if (nextListeners.delete(newListener)) {
-          onNextListeners.forEach((listener) => listener(nextListeners.size));
+        if (onNextCallbacks.delete(listener)) {
+          onRefCount?.(onNextCallbacks.size);
         }
       };
     },
-    onSubscribe: (newListener) => {
-      newListener = newListener.bind(null);
-      newListener(onNextListeners.size);
-      onNextListeners.add(newListener);
-      return () => onNextListeners.delete(newListener);
-    },
+    value: initialValue,
   };
 
   return observable;
 };
 
-const setObservableScope = (observable: Observable<any> | undefined) => {
-  window[scope] = observable;
+const useObservable = <
+  TObservable extends Observable<any> | undefined,
+  TValue extends TObservable extends Observable<infer TObservableValue> ? TObservableValue : undefined,
+  TSelector extends Selector<TValue, any> | undefined,
+>(
+  observable: TObservable,
+  selector: TSelector,
+): InferSelected<TValue, TSelector> => {
+  const selectorRef = useRef(selector);
+  const [value, setValue] = useState(() => getSelectorValue(selectorRef.current, observable?.value));
+  const valueRef = useRef(value);
+
+  useEffect(() => {
+    selectorRef.current = selector;
+  });
+
+  useEffect(() => {
+    return observable?.onNext((newValue) => {
+      const selected = getSelectorValue(selectorRef.current, newValue);
+      const isUpdated =
+        typeof selectorRef.current === 'function' ? newValue !== selected : isTupleChanged(valueRef.current, selected);
+
+      if (isUpdated) {
+        valueRef.current = selected;
+        setValue(() => selected);
+      }
+    });
+  }, [observable]);
+
+  return value;
 };
 
-const getObservableScope = (): Observable<any> | undefined => {
-  return window[scope];
-};
-
-export { type Observable, createObservable, getObservableScope, setObservableScope };
+export { type Observable, createObservable, useObservable };

@@ -1,31 +1,94 @@
-import { type ComponentType, type Context, type ReactNode, createContext, useMemo } from 'react';
+import { type ComponentType, type Context, type ReactNode, createContext, useContext, useState } from 'react';
 
-import { type Observable, createObservable } from './observable.js';
-import { Renderer } from './renderer.js';
-import { Worker } from './worker.js';
+import { type Observable, useObservable } from './observable.js';
+import {
+  type InferSelected,
+  type InferSelectedArray,
+  type InferSelectedObject,
+  type InferSelectedValue,
+  type Selector,
+  type SelectorArray,
+  type SelectorObject,
+  type SelectorValue,
+} from './selector.js';
+import { createWorker } from './worker.js';
 
-type Factor<TResult, TProps extends object> = ComponentType<TProps & { children?: ReactNode }> & {
-  readonly Context: Context<Observable<TResult> | undefined>;
+type Factor<TValue, TProps extends object> = ComponentType<TProps & { children?: ReactNode }> & {
+  readonly Context: Context<Observable<TValue> | undefined>;
 };
 
-const createFactor = <TResult, TProps extends object>(
-  hook: (() => TResult) | ((props: TProps) => TResult),
-): Factor<TResult, TProps> => {
+type FactorHook = {
+  <TValue>(factor: Pick<Factor<TValue, any>, 'Context'>): TValue;
+  <TValue, TSelector extends SelectorValue<TValue, any>>(
+    factor: Pick<Factor<TValue, any>, 'Context'>,
+    selector: TSelector,
+  ): InferSelectedValue<TSelector>;
+  <TValue, TSelector extends SelectorArray<TValue>>(
+    factor: Pick<Factor<TValue, any>, 'Context'>,
+    selector: TSelector,
+  ): InferSelectedArray<TSelector>;
+  <TValue, TSelector extends SelectorObject<TValue>>(
+    factor: Pick<Factor<TValue, any>, 'Context'>,
+    selector: TSelector,
+  ): InferSelectedObject<TSelector>;
+};
+
+type OptionalFactorHook = {
+  <TValue>(factor: Pick<Factor<TValue, any>, 'Context'>): TValue | undefined;
+  <TValue, TSelector extends SelectorValue<TValue | undefined, any>>(
+    factor: Pick<Factor<TValue, any>, 'Context'>,
+    selector: TSelector,
+  ): InferSelectedValue<TSelector>;
+  <TValue, TSelector extends SelectorArray<TValue | undefined>>(
+    factor: Pick<Factor<TValue, any>, 'Context'>,
+    selector: TSelector,
+  ): InferSelectedArray<TSelector>;
+  <TValue, TSelector extends SelectorObject<TValue | undefined>>(
+    factor: Pick<Factor<TValue, any>, 'Context'>,
+    selector: TSelector,
+  ): InferSelectedObject<TSelector>;
+};
+
+const createFactor = <TValue, TProps extends object>(
+  useValue: (() => TValue) | ((props: TProps) => TValue),
+): Factor<TValue, TProps> => {
+  const Worker = createWorker(useValue);
   const Factor = ({ children, ...props }: TProps & { children?: ReactNode }): JSX.Element => {
-    const observable = useMemo(() => createObservable<TResult>(), []);
+    const [observable, onObservable] = useState<Observable<TValue>>();
 
     return (
       <>
-        <Worker observable={observable} hook={hook} hookProps={props as TProps} />
-        <Renderer observable={observable}>
-          <Factor.Context.Provider value={observable}>{children}</Factor.Context.Provider>
-        </Renderer>
+        <Worker onObservable={onObservable} useValueProps={props as TProps} />
+        <Factor.Context.Provider value={observable}>{observable && children}</Factor.Context.Provider>
       </>
     );
   };
-  Factor.Context = createContext<Observable<TResult> | undefined>(undefined);
+  Factor.Context = createContext<Observable<TValue> | undefined>(undefined);
+  Factor.Context.displayName = 'Factor';
 
   return Factor;
 };
 
-export { type Factor, createFactor };
+const useFactor: FactorHook = <TValue, TSelector extends Selector<TValue, any>>(
+  factor: Pick<Factor<TValue, any>, 'Context'>,
+  selector?: TSelector,
+): InferSelected<TValue, TSelector | undefined> => {
+  const observable = useContext(factor.Context);
+
+  if (!observable) {
+    throw new Error('factor parent is required');
+  }
+
+  return useObservable(observable, selector);
+};
+
+const useOptionalFactor: OptionalFactorHook = <TValue, TSelector extends Selector<TValue | undefined, any>>(
+  factor: Pick<Factor<TValue, any>, 'Context'>,
+  selector?: TSelector | undefined,
+): InferSelected<TValue | undefined, TSelector | undefined> => {
+  const observable = useContext(factor.Context);
+
+  return useObservable(observable, selector);
+};
+
+export { type Factor, createFactor, useFactor, useOptionalFactor };
