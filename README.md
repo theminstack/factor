@@ -2,6 +2,9 @@
 
 Hoist [React Hooks](https://reactjs.org/docs/hooks-intro.html) up to [React Contexts](https://reactjs.org/docs/context.html) to create shared dynamic states.
 
+[![build](https://github.com/Shakeskeyboarde/react-factor/actions/workflows/build.yml/badge.svg)](https://github.com/Shakeskeyboarde/react-factor/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/Shakeskeyboarde/react-factor/branch/main/graph/badge.svg?token=JDXG5NL0L6)](https://codecov.io/gh/Shakeskeyboarde/react-factor)
+
 Try out the live [demo](https://codesandbox.io/p/sandbox/react-factor-todo-wdfq4p?file=%2FREADME.md) on CodeSandbox!
 
 **Goals and Features:**
