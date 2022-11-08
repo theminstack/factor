@@ -3,7 +3,7 @@
   "description": "Hoist React Hooks up to React Contexts to create shared dynamic states.",
   "author": "Chris Ackerman <chris@topher.land>",
   "license": "ISC",
-  "version": "0.0.21",
+  "version": "1.0.0",
   "keywords": [
     "react",
     "state",
