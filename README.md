@@ -2,6 +2,8 @@
 
 Hoist [React Hooks](https://reactjs.org/docs/hooks-intro.html) up to [React Contexts](https://reactjs.org/docs/context.html) to create shared dynamic states.
 
+Try out the live [demo](https://codesandbox.io/p/sandbox/react-factor-todo-wdfq4p?file=%2FREADME.md) on CodeSandbox!
+
 **Goals and Features:**
 
 - Improve efficiency over custom dynamic contexts or simple hoisting.

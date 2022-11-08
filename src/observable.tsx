@@ -88,7 +88,9 @@ const useObservable = <
   const update = useCallback((newValue: TValue): void => {
     const selected = getSelectorValue(selectorRef.current, newValue);
     const isUpdated =
-      typeof selectorRef.current === 'function' ? newValue !== selected : isTupleChanged(valueRef.current, selected);
+      typeof selectorRef.current === 'function'
+        ? valueRef.current !== selected
+        : isTupleChanged(valueRef.current, selected);
 
     if (isUpdated) {
       valueRef.current = selected;

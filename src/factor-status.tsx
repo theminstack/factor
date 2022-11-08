@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { type Observable, createObservable } from './observable.js';
 
@@ -37,11 +37,19 @@ const withFactorStatus = <TReturn, TArgs extends unknown[]>(
 const useFactorStatus = (): FactorStatus => {
   const observable = window[$STATUS];
   const [status, setStatus] = useState(observable?.value ?? 'active');
+  const statusRef = useRef(status);
+
+  const update = useCallback((newStatus: FactorStatus = 'active') => {
+    if (statusRef.current !== newStatus) {
+      statusRef.current = newStatus;
+      setStatus(newStatus);
+    }
+  }, []);
 
   useEffect(() => {
-    observable?.onNext(setStatus);
-    setStatus(observable?.value ?? 'active');
-  }, [observable]);
+    observable?.onNext(update);
+    update(observable?.value);
+  }, [observable, update]);
 
   return status;
 };
