@@ -49,7 +49,7 @@ jobs:
       - name: Create Workspace Artifact
         if: ${{ always() }}
         continue-on-error: true
-        run: tar -zcvf workspace.tgz .
+        run: tar --exclude=workspace.tar -cf workspace.tar .
 
       - name: Upload Workspace Artifact
         uses: actions/upload-artifact@v3
@@ -57,5 +57,5 @@ jobs:
         continue-on-error: true
         with:
           name: workspace
-          path: workspace.tgz
+          path: workspace.tar
           retention-days: 7
