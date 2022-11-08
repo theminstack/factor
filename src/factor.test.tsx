@@ -182,5 +182,25 @@ describe('useOptionalFactor without parent', () => {
       expect(useFactorTest).toHaveBeenCalledTimes(count + 2);
       expect(result.current).toEqual(2);
     });
+
+    test('can inherit parent factor when nested', () => {
+      const NestingFactor = createFactor((): number => {
+        return useOptionalFactor(NestingFactor, (value = 0) => value + 1);
+      });
+
+      const { result } = renderHook(() => useFactorTest(NestingFactor), {
+        wrapper: ({ children }) => {
+          return (
+            <NestingFactor>
+              <NestingFactor>
+                <NestingFactor>{children}</NestingFactor>
+              </NestingFactor>
+            </NestingFactor>
+          );
+        },
+      });
+
+      expect(result.current).toBe(3);
+    });
   });
 });
