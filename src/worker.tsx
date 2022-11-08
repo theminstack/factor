@@ -9,6 +9,7 @@ type Props<TValue, TProps extends object> = {
 };
 
 const useIsometricEffect =
+  /* c8 ignore next */
   typeof window !== 'undefined' && Boolean(window.document?.createElement) ? useLayoutEffect : useEffect;
 
 const useSingleton = <TValue,>(init: () => TValue): TValue => {

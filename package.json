@@ -3,7 +3,7 @@
   "description": "Hoist React Hooks up to React Contexts to create shared dynamic states.",
   "author": "Chris Ackerman <chris@topher.land>",
   "license": "ISC",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "keywords": [
     "react",
     "state",
@@ -40,7 +40,10 @@
     "modernize": "npx npm-check-updates -i --format group"
   },
   "devDependencies": {
+    "@jest/globals": "^29.3.0",
+    "@testing-library/react": "^13.4.0",
     "@types/jest": "^29.2.2",
+    "@types/node": "^18.11.9",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
     "@types/styled-components": "^5.1.26",
