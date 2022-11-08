@@ -41,15 +41,21 @@ jobs:
       - name: Publish (NPM)
         continue-on-error: true
         run: |
-          npm config --location project set //registry.npmjs.org/:_authToken '$NPM_TOKEN'
+          npm config --location project set //registry.npmjs.org/:_authToken '${NPM_TOKEN}'
           npm publish --access public --ignore-scripts *.tgz
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
 
-      - name: Upload Artifacts
+      - name: Create Workspace Artifact
+        if: ${{ always() }}
+        continue-on-error: true
+        run: tar -zcvf workspace.tgz .
+
+      - name: Upload Workspace Artifact
         uses: actions/upload-artifact@v3
         if: ${{ always() }}
+        continue-on-error: true
         with:
           name: workspace
-          path: '**/*'
+          path: workspace.tgz
           retention-days: 7
