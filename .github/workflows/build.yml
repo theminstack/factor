@@ -31,15 +31,17 @@ jobs:
       - name: Pack
         run: npm pack
 
-      # - name: Publish (CodeCov)
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     files: ./out/coverage/lcov.info
-      #     fail_ci_if_error: true
-      #     verbose: true
+      - name: Publish (CodeCov)
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./out/coverage/lcov.info
+          fail_ci_if_error: true
+          verbose: true
 
-      # - name: Publish (NPM)
-      #   continue-on-error: true
-      #   run: npm publish --access public --ignore-scripts *.tgz
-      #   env:
-      #     NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Publish (NPM)
+        continue-on-error: true
+        run: |
+          npm config --location project set //registry.npmjs.org/:_authToken '$NPM_TOKEN'
+          npm publish --access public --ignore-scripts *.tgz
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
