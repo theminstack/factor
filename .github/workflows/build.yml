@@ -42,8 +42,14 @@ jobs:
         continue-on-error: true
         run: |
           npm config --location project set //registry.npmjs.org/:_authToken '$NPM_TOKEN'
-          cat .npmrc
-          echo $NPM_TOKEN
           npm publish --access public --ignore-scripts *.tgz
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: workspace
+          path: '**/*'
+          retention-days: 7
