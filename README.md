@@ -147,7 +147,7 @@ render(
 
 ## Use Consumer Information
 
-A factor can react to consumers (components which use the factor) in the following ways.
+A factor can react to consumers (ie. components which use the factor) in the following ways.
 
 - Change behavior based on whether or not consumers exist.
 - Take action when a consumer is mounted.
