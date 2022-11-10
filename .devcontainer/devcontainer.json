@@ -40,7 +40,8 @@
 				"richie5um2.vscode-sort-json",
 				"rvest.vs-code-prettier-eslint",
 				"chrisbibby.hide-node-modules",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"roonie007.hide-files"
 			]
 		}
 	}
