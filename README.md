@@ -172,7 +172,7 @@ The `useFactorStatus` hook also returns `"active"` when used outside of a factor
 
 ### Handle Factor Mounted
 
-The `useFactorMountEffect` performs a side-effect when a child is mounted which uses the factor.
+The `useFactorMountEffect` performs a side-effect when a child which uses the factor is mounted.
 
 > **Note:** Detecting individual consumer unmounts is not supported. See [useFactorStatus](#handle-factor-idle-or-active) to detect no consumers.
 
@@ -189,8 +189,6 @@ const AlertsFactor = createFactor((options: Options) => {
 ```
 
 When used outside of a factor, the effect will be run once on mount. A hook used outside of a factor is its own consumer, and therefore a consumer is mounted when the hook is mounted.
-
----
 
 ## Compare Alternatives
 
