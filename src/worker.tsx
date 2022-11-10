@@ -1,6 +1,6 @@
 import { type ComponentType, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 
-import { withFactorStatus } from './factor-status.js';
+import { withContext } from './context.js';
 import { type Observable, createObservable } from './observable.js';
 
 type Props<TValue, TProps extends object> = {
@@ -20,11 +20,14 @@ const useSingleton = <TValue,>(init: () => TValue): TValue => {
 const createWorker = <TValue, TProps extends object>(
   useValue: (props: TProps) => TValue,
 ): ComponentType<Props<TValue, TProps>> => {
-  const [useFactorValue, setFactorStatus] = withFactorStatus(useValue);
+  const [useFactorValue, setRefCount, setStatus] = withContext(useValue);
   const Worker = ({ onObservable, useValueProps }: Props<TValue, TProps>) => {
     const value = useFactorValue(useValueProps);
     const observable = useSingleton(() =>
-      createObservable(value, (refCount) => setFactorStatus(refCount > 0 ? 'active' : 'idle')),
+      createObservable(value, (refCount) => {
+        setRefCount(refCount);
+        setStatus(refCount > 0 ? 'active' : 'idle');
+      }),
     );
 
     useIsometricEffect(() => {

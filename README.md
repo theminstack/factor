@@ -12,8 +12,9 @@ Try out the live [demo](https://codesandbox.io/p/sandbox/react-factor-todo-wdfq4
 - Improve efficiency over custom dynamic contexts or simple hoisting.
 - Compose state and behavior using any React hook.
 - Leverage React hook testing tools.
-- Avoid extra work when there are no consumers.
-- Support referencing parent state when nested.
+- Reference parent state when nested.
+- Change behavior based on idle or active status.
+- Update when new consumers are mounted.
 
 **Table of Contents:**
 
@@ -21,8 +22,10 @@ Try out the live [demo](https://codesandbox.io/p/sandbox/react-factor-todo-wdfq4
   - [Select Single Values](#select-single-values)
   - [Select Tuples](#select-tuples)
   - [Use Optional Factors](#use-optional-factors)
-  - [Handle No Consumers](#handle-no-consumers)
   - [Reference Parent State](#reference-parent-state)
+- [Use Consumer Information](#use-consumer-information)
+  - [Handle Factor Idle or Active](#handle-factor-idle-or-active)
+  - [Handle Factor Mounted](#handle-factor-mounted)
 - [Compare Alternatives](#compare-alternatives)
   - [React Context](#react-context)
   - [Redux](#redux)
@@ -81,11 +84,7 @@ However, if you need to reference values from the component scope, the `useFacto
 ```tsx
 const { alertId } = props;
 // Rerenders when the alertId or the selected alert are updated.
-const alert = useFactor(
-  AlertsFactor,
-  (value) => value.alerts[alertId],
-  [alertId],
-);
+const alert = useFactor(AlertsFactor, (value) => value.alerts[alertId], [alertId]);
 ```
 
 ### Select Tuples
@@ -119,24 +118,6 @@ const alerts = useOptionalFactor(AlertsFactor, (value) => {
 });
 ```
 
-### Handle No Consumers
-
-A factor hook (ie. the hook passed to `createFactor`) can detect whether or not the factor has any consumers with the `useFactorStatus` hook. This hook returns `"idle"` when there are no consumers, or `"active"` when consumers exist.
-
-```tsx
-const AlertsFactor = createFactor((options: Options) => {
-  const factorStatus = useFactorStatus();
-
-  return useAlerts({
-    ...options,
-    // Provide a default value for the hook "enabled" option.
-    enabled: options.enabled ?? factorStatus === 'active',
-  });
-});
-```
-
-The `useFactorStatus` hook returns `"active"` when used outside of a factor. A hook used outside of a factor is its own consumer, and therefore always active.
-
 ### Reference Parent State
 
 A factor hook can reference its own factor, allowing it to inherit the state from a parent of the same factor type.
@@ -163,6 +144,51 @@ render(
 
 // Rendered: <div>2</div>
 ```
+
+## Use Consumer Information
+
+A factor can react to consumers in the following ways.
+
+- Change behavior based on whether or not consumers exist.
+- Take action when child components are mounted that use the factor.
+
+### Handle Factor Idle or Active
+
+The `useFactorStatus` hook returns `"idle"` when there are no consumers, or `"active"` when consumers exist.
+
+```tsx
+const AlertsFactor = createFactor((options: Options) => {
+  const factorStatus = useFactorStatus();
+
+  return useAlerts({
+    ...options,
+    // Provide a default value for the hook "enabled" option.
+    enabled: options.enabled ?? factorStatus === 'active',
+  });
+});
+```
+
+The `useFactorStatus` hook also returns `"active"` when used outside of a factor. A hook used outside of a factor is its own consumer, and therefore always active.
+
+### Handle Factor Mounted
+
+The `useFactorMountEffect` performs a side-effect when a child is mounted which uses the factor.
+
+> **Note:** Detecting individual consumer unmounts is not supported. See [useFactorStatus](#handle-factor-idle-or-active) to detect no consumers.
+
+```tsx
+const AlertsFactor = createFactor((options: Options) => {
+  const value = useAlerts(options);
+
+  useFactorMountEffect(() => {
+    value.update();
+  });
+
+  return value;
+});
+```
+
+When used outside of a factor, the effect will be run once on mount. A hook used outside of a factor is its own consumer, and therefore a consumer is mounted when the hook is mounted.
 
 ---
 
@@ -202,7 +228,7 @@ These are less popular (but still common) choices, with a scope similar to this 
 
 - [Constate](https://www.npmjs.com/package/constate) (most similar to this library)
   - Triggers rerenders at the provider.
-- [Recoil](https://www.npmjs.com/package/recoil), [Jotai](https://www.npmjs.com/package/jotai)
+- [Recoil](https://www.npmjs.com/package/recoil), [Jotai](https://www.npmjs.com/package/jotai), [Zustand](https://www.npmjs.com/package/zustand)
   - Behavior cannot be defined using hooks.
 - [use-context-selector](https://www.npmjs.com/package/use-context-selector)
   - Uses unstable internals.
@@ -213,8 +239,12 @@ These are less popular (but still common) choices, with a scope similar to this 
 
 The basic requirement for any shared state solution, is that it should be more efficient than using a vanilla React context. But, `Constate` **triggers rerenders at the provider** whenever the state changes. This is extremely puzzling given its recent popularity. Either I'm missing something, or very few people are looking at the code and using it in places where performance problems would be noticed. It has selectors, but these the don't prevent any rerenders, and even potentially _increased_ the overhead by generating extra stacked contexts. Please let me know if I'm wrong about this.
 
-The `Recoil`, `Jotai`, and `react-hooks-global-state` state **behavior cannot be defined using hooks**. They can be used _by_ hooks, but cannot themselves _use_ hooks in the atom or context definitions. This adds the knowledge overhead of separate state and lifecycle patterns. It adds complexity when integrating with React components and existing hooks. And, it means that none of the React hook testing infrastructure can be leveraged.
+The `Recoil`, `Jotai`, `Zustand`, and `react-hooks-global-state` state **behavior cannot be defined using hooks**. They can be used _by_ hooks, but cannot themselves _use_ hooks in the atom or context definitions. This means that you can't easily uplift or reuse any of your existing hooks. It adds knowledge overhead for the patterns specific to a library. And, the React hooks testing infrastructure can't be leveraged directly.
 
 The `react-hooks-global-state` library **does not use the React context system** at all. Instead, it creates new hooks which are tied to a _global_ state. This is simple, but makes scoping difficult, if not impossible. It can also cause problems if two versions of the library are ever used together.
 
 And finally, the `use-context-selector` library **uses unstable internals**, and also **uses render side-effects incorrectly**. It's academically interesting as a proposal proof-of-concept. However, it will break in future versions of React, potentially even in minor or patch version changes.
+
+```
+
+```
