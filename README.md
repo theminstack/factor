@@ -147,10 +147,10 @@ render(
 
 ## Use Consumer Information
 
-A factor can react to consumers in the following ways.
+A factor can react to consumers (components which use the factor) in the following ways.
 
 - Change behavior based on whether or not consumers exist.
-- Take action when child components are mounted that use the factor.
+- Take action when a consumer is mounted.
 
 ### Handle Factor Idle or Active
 
@@ -172,7 +172,7 @@ The `useFactorStatus` hook also returns `"active"` when used outside of a factor
 
 ### Handle Factor Mounted
 
-The `useFactorMountEffect` performs a side-effect when a child which uses the factor is mounted.
+The `useFactorMountEffect` performs a side-effect when a consumer is mounted.
 
 > **Note:** Detecting individual consumer unmounts is not supported. See [useFactorStatus](#handle-factor-idle-or-active) to detect no consumers.
 
