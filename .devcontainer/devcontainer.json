@@ -6,12 +6,19 @@
 	"customizations": {
 		"vscode": {
 			"settings": {
+				"files.autoSave": "afterDelay",
 				"extensions.ignoreRecommendations": true,
 				"workbench.colorTheme": "Default Dark+",
+				"workbench.iconTheme": "material-icon-theme",
+        "editor.tabSize": 2,
 				"editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
 				"editor.formatOnPaste": false,
 				"editor.formatOnType": false,
-				"editor.formatOnSave": false
+				"editor.formatOnSave": false,
+				"terminal.integrated.scrollback": 10000,
+				"markdown.extension.toc.levels": "2..4",
+				"github.codespaces.devcontainerChangedNotificationStyle": "none",
+				"git.autofetch": true,
 			},
 			"extensions": [
 				"dbaeumer.vscode-eslint",
@@ -32,7 +39,9 @@
 				"jasonnutter.search-node-modules",
 				"eamodio.gitlens",
 				"richie5um2.vscode-sort-json",
-				"rvest.vs-code-prettier-eslint"
+				"rvest.vs-code-prettier-eslint",
+				"chrisbibby.hide-node-modules",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	}

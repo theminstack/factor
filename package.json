@@ -34,7 +34,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "start": "vite --force",
+    "start": "vite --force --host",
     "test": "del-cli out && rc test -o",
     "prepack": "del-cli lib *.tgz && rc build",
     "modernize": "npx npm-check-updates -i --format group"

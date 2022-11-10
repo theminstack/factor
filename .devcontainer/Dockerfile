@@ -16,6 +16,7 @@ RUN . $NVM_DIR/nvm.sh \
     && nvm install 18 \
     && nvm alias default node \
     && nvm use node \
-    && npm i -g npm@latest
+    && npm i -g npm@latest \
+    && npm i -g typescript prettier eslint @typescript-eslint/parser
 
 RUN apt-get install -y git
