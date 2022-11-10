@@ -10,8 +10,8 @@
 				"extensions.ignoreRecommendations": true,
 				"workbench.colorTheme": "Default Dark+",
 				"workbench.iconTheme": "material-icon-theme",
-        "editor.tabSize": 2,
-				"editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+				"editor.tabSize": 2,
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
 				"editor.formatOnPaste": false,
 				"editor.formatOnType": false,
 				"editor.formatOnSave": false,
@@ -19,6 +19,7 @@
 				"markdown.extension.toc.levels": "2..4",
 				"github.codespaces.devcontainerChangedNotificationStyle": "none",
 				"git.autofetch": true,
+				"hide-node-modules.enable": true
 			},
 			"extensions": [
 				"dbaeumer.vscode-eslint",
@@ -36,9 +37,9 @@
 				"christian-kohler.npm-intellisense",
 				"jasonnutter.search-node-modules",
 				"richie5um2.vscode-sort-json",
-				"rvest.vs-code-prettier-eslint",
 				"ms-azuretools.vscode-docker",
-				"roonie007.hide-files"
+				"esbenp.prettier-vscode",
+				"chrisbibby.hide-node-modules"
 			]
 		}
 	}
