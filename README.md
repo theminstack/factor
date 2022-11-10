@@ -242,7 +242,3 @@ The `Recoil`, `Jotai`, `Zustand`, and `react-hooks-global-state` state **behavio
 The `react-hooks-global-state` library **does not use the React context system** at all. Instead, it creates new hooks which are tied to a _global_ state. This is simple, but makes scoping difficult, if not impossible. It can also cause problems if two versions of the library are ever used together.
 
 And finally, the `use-context-selector` library **uses unstable internals**, and also **uses render side-effects incorrectly**. It's academically interesting as a proposal proof-of-concept. However, it will break in future versions of React, potentially even in minor or patch version changes.
-
-```
-
-```
