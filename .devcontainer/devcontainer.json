@@ -33,14 +33,12 @@
 				"Compulim.indent4to2",
 				"firsttris.vscode-jest-runner",
 				"bierner.markdown-preview-github-styles",
-				"unifiedjs.vscode-mdx",
-				"xyc.vscode-mdx-preview",
 				"christian-kohler.npm-intellisense",
 				"jasonnutter.search-node-modules",
 				"richie5um2.vscode-sort-json",
 				"rvest.vs-code-prettier-eslint",
-				"chrisbibby.hide-node-modules",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"roonie007.hide-files"
 			]
 		}
 	}
