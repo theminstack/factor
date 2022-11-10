@@ -19,4 +19,4 @@ RUN . $NVM_DIR/nvm.sh \
     && npm i -g npm@latest \
     && npm i -g typescript prettier eslint @typescript-eslint/parser
 
-RUN apt-get install -y git
+RUN apt-get install -y git vim
