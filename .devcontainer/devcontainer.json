@@ -6,6 +6,7 @@
 	"customizations": {
 		"vscode": {
 			"settings": {
+				"extensions.ignoreRecommendations": true,
 				"workbench.colorTheme": "Default Dark+",
 				"editor.defaultFormatter": "esbenp.prettier-vscode",
 				"editor.formatOnPaste": false,
@@ -29,7 +30,9 @@
 				"xyc.vscode-mdx-preview",
 				"christian-kohler.npm-intellisense",
 				"jasonnutter.search-node-modules",
-				"esbenp.prettier-vscode"
+				"esbenp.prettier-vscode",
+				"eamodio.gitlens",
+				"richie5um2.vscode-sort-json"
 			]
 		}
 	}
