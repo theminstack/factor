@@ -1,25 +1,44 @@
 {
 	"name": "Node.js",
-	"build": { "dockerfile": "Dockerfile" },
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
 	"customizations": {
 		"vscode": {
+			"settings": {
+				"workbench.colorTheme": "Default Dark+",
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
+				"editor.formatOnPaste": false,
+				"editor.formatOnType": false,
+				"editor.formatOnSave": false
+			},
 			"extensions": [
-				"eamodio.gitlens",
 				"dbaeumer.vscode-eslint",
-				"ms-azuretools.vscode-docker"
+				"PKief.material-icon-theme",
+				"christian-kohler.path-intellisense",
+				"streetsidesoftware.code-spell-checker",
+				"yzhang.markdown-all-in-one",
+				"aaron-bond.better-comments",
+				"naumovs.color-highlight",
+				"styled-components.vscode-styled-components",
+				"DigitalBrainstem.javascript-ejs-support",
+				"Compulim.indent4to2",
+				"firsttris.vscode-jest-runner",
+				"bierner.markdown-preview-github-styles",
+				"unifiedjs.vscode-mdx",
+				"xyc.vscode-mdx-preview",
+				"christian-kohler.npm-intellisense",
+				"jasonnutter.search-node-modules",
+				"esbenp.prettier-vscode"
 			]
 		}
 	}
-
 	// Features to add to the dev container. More info: https://containers.dev/implementors/features.
 	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "yarn install",
-
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 }
