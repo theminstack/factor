@@ -34,13 +34,13 @@
 				"DigitalBrainstem.javascript-ejs-support",
 				"Compulim.indent4to2",
 				"firsttris.vscode-jest-runner",
-				"bierner.markdown-preview-github-styles",
 				"christian-kohler.npm-intellisense",
 				"jasonnutter.search-node-modules",
 				"richie5um2.vscode-sort-json",
 				"ms-azuretools.vscode-docker",
 				"esbenp.prettier-vscode",
-				"chrisbibby.hide-node-modules"
+				"chrisbibby.hide-node-modules",
+				"ozaki.markdown-github-dark"
 			]
 		}
 	}
