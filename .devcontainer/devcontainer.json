@@ -9,6 +9,7 @@
 			"settings": {
 				"files.autoSave": "afterDelay",
 				"extensions.ignoreRecommendations": true,
+				"extensions.closeExtensionDetailsOnViewChange": true,
 				"workbench.colorTheme": "Default Dark+",
 				"workbench.iconTheme": "material-icon-theme",
 				"editor.tabSize": 2,
@@ -40,7 +41,9 @@
 				"ms-azuretools.vscode-docker",
 				"esbenp.prettier-vscode",
 				"chrisbibby.hide-node-modules",
-				"ozaki.markdown-github-dark"
+				"ozaki.markdown-github-dark",
+				"eamodio.gitlens",
+				"fabiospampinato.vscode-open-in-github"
 			]
 		}
 	}
