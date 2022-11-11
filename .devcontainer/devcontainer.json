@@ -1,8 +1,9 @@
 {
-	"name": "Ubuntu",
+	"name": "Arch Node.js v18",
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
+	"postCreateCommand": "pacman-key --init",
 	"customizations": {
 		"vscode": {
 			"settings": {
