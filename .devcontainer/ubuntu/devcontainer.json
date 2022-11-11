@@ -1,5 +1,5 @@
 {
-	"name": "Node.js",
+	"name": "Ubuntu",
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
