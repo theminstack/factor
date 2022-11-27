@@ -1,4 +1,4 @@
-# @minstack/factor
+# MinStack Factor
 
 Minimal shared dynamic states by hoisting [React Hooks](https://reactjs.org/docs/hooks-intro.html) up to [React Contexts](https://reactjs.org/docs/context.html).
 

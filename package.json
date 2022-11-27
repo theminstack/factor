@@ -3,7 +3,7 @@
   "description": "Minimal shared dynamic states by hoisting React Hooks up to React Contexts.",
   "author": "Chris Ackerman <chris@topher.land>",
   "license": "ISC",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "keywords": [
     "react",
     "state",
